@@ -1,39 +1,33 @@
 {
   "format_version": 2,
   "header": {
-    "description": "ROXY CLIENT Behavior Pack - Test features for Minecraft Bedrock",
+    "description": "ROXY CLIENT - Bedrock utility features",
     "name": "ROXY CLIENT Behavior Pack",
     "uuid": "12345678-1234-1234-1234-123456789012",
-    "version": [1, 0, 0],
-    "min_engine_version": [1, 20, 0]
+    "version": [1, 0, 1],
+    "min_engine_version": [1, 26, 60]
   },
   "modules": [
     {
-      "description": "ROXY CLIENT Module",
+      "description": "ROXY CLIENT Script Module",
       "type": "script",
+      "language": "javascript",
       "uuid": "87654321-4321-4321-4321-210987654321",
-      "version": [1, 0, 0],
+      "version": [1, 0, 1],
       "entry": "scripts/main.js"
     },
     {
-      "description": "ROXY CLIENT Behaviors",
+      "description": "ROXY CLIENT Behavior Module",
       "type": "data",
       "uuid": "11111111-1111-1111-1111-111111111111",
-      "version": [1, 0, 0]
+      "version": [1, 0, 1]
     }
   ],
   "dependencies": [
     {
       "module_name": "@minecraft/server",
-      "version": "1.8.0"
-    },
-    {
-      "module_name": "@minecraft/server-ui",
-      "version": "1.2.0"
-    },
-    {
-      "module_name": "@minecraft/server-net",
-      "version": "1.0.0"
+      "version": "2.11.0"
     }
   ]
+
 }
