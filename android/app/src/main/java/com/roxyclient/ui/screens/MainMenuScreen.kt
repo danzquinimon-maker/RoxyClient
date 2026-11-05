@@ -1,7 +1,14 @@
+
 package com.roxyclient.ui.screens
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,38 +30,28 @@ import com.roxyclient.ui.components.StatusIndicator
 @Composable
 fun MainMenuScreen() {
     var currentMenu by remember { mutableStateOf<MenuItem?>(null) }
-    var isMenuOpen by remember { mutableStateOf(true) }
     var isConnected by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.background,
-                        MaterialTheme.colorScheme.background
-                    )
-                )
-            )
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        if (isMenuOpen) {
-            AnimatedContent(
-                targetState = currentMenu,
-                label = "menu_transition",
-                modifier = Modifier.fillMaxSize()
-            ) { targetMenu ->
-                if (targetMenu == null) {
-                    MainMenu(
-                        onMenuItemClick = { currentMenu = it },
-                        isConnected = isConnected
-                    )
-                } else {
-                    CategoryScreen(
-                        menuItem = targetMenu,
-                        onBackClick = { currentMenu = null }
-                    )
-                }
+        AnimatedContent(
+            targetState = currentMenu,
+            label = "menu_transition",
+            modifier = Modifier.fillMaxSize()
+        ) { targetMenu ->
+            if (targetMenu == null) {
+                MainMenu(
+                    onMenuItemClick = { currentMenu = it },
+                    isConnected = isConnected
+                )
+            } else {
+                CategoryScreen(
+                    menuItem = targetMenu,
+                    onBackClick = { currentMenu = null }
+                )
             }
         }
     }
@@ -73,13 +70,13 @@ fun MainMenu(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Header
+        // Main header
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(20.dp))
                 .background(
-                    brush = Brush.verticalGradient(
+                    Brush.verticalGradient(
                         colors = listOf(
                             MaterialTheme.colorScheme.primary,
                             MaterialTheme.colorScheme.secondary
@@ -97,31 +94,43 @@ fun MainMenu(
                     text = "🎮",
                     fontSize = 48.sp
                 )
+
                 Text(
                     text = "ROXY CLIENT",
                     fontSize = 28.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
+
                 Text(
-                    text = "Professional Minecraft Bedrock Client",
+                    text = "Minecraft Bedrock Utility Client",
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                    color = MaterialTheme.colorScheme.onPrimary.copy(
+                        alpha = 0.85f
+                    )
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Status
+        // Connection status
         StatusIndicator(
             isConnected = isConnected,
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        // Menu categories
+        Text(
+            text = "CLIENT FEATURES",
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(
+                start = 4.dp,
+                top = 8.dp,
+                bottom = 4.dp
+            )
+        )
 
-        // Menu Items
         MenuItem.all().forEach { item ->
             AnimatedVisibility(
                 visible = true,
@@ -131,42 +140,52 @@ fun MainMenu(
                 MenuItemButton(
                     title = item.title,
                     icon = item.icon,
-                    onClick = { onMenuItemClick(item) },
+                    onClick = {
+                        onMenuItemClick(item)
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
         // Footer
+        Spacer(modifier = Modifier.height(8.dp))
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surface)
-                .padding(16.dp),
+                .padding(18.dp),
             contentAlignment = Alignment.Center
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
                 Text(
-                    text = "Version 1.0.0",
+                    text = "ROXY CLIENT",
                     fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+
                 Text(
-                    text = "Bedrock Latest (1.22.0+)",
+                    text = "Bedrock 26.60+",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
+
+                Text(
+                    text = "Version 1.0.0",
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(20.dp))
     }
 }
 
@@ -183,22 +202,24 @@ fun CategoryScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Header with back button
+        // Back button and category title
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surface)
                 .clickable { onBackClick() }
-                .padding(16.dp),
+                .padding(18.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
                 text = "←",
-                fontSize = 20.sp,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
+
             Text(
                 text = menuItem.title,
                 fontSize = 20.sp,
@@ -206,15 +227,13 @@ fun CategoryScreen(
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f)
             )
+
             Text(
                 text = menuItem.icon,
                 fontSize = 24.sp
             )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Category specific content
         when (menuItem) {
             is MenuItem.Combat -> CombatCategoryScreen()
             is MenuItem.Movement -> MovementCategoryScreen()
@@ -224,128 +243,153 @@ fun CategoryScreen(
             is MenuItem.HUD -> HUDCategoryScreen()
             is MenuItem.Settings -> SettingsCategoryScreen()
         }
+    }
+}
 
-        Spacer(modifier = Modifier.height(32.dp))
+@Composable
+private fun FeaturePanel(
+    title: String,
+    description: String
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(18.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Text(
+            text = title,
+            fontSize = 17.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Text(
+            text = description,
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }
 
 @Composable
 fun CombatCategoryScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "⚔️ Combat Features\n\nTarget Info\nHitbox Visualization\nAttack Range\nCPS Counter",
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-    }
+    FeaturePanel(
+        title = "⚔️ Interaction Information",
+        description = """
+            Player Information
+
+            Health Status
+
+            Session Information
+
+            Online Player List
+        """.trimIndent()
+    )
 }
 
 @Composable
 fun MovementCategoryScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "🏃 Movement Features\n\nSprint Control\nAuto-Jump Test\nMovement HUD\nSpeed Meter",
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-    }
+    FeaturePanel(
+        title = "🏃 Movement",
+        description = """
+            Movement Information
+
+            Speed Display
+
+            Coordinate Tracking
+
+            Direction Indicator
+        """.trimIndent()
+    )
 }
 
 @Composable
 fun VisualsCategoryScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "👁️ Visuals Features\n\nESP System\nEntity Nametags\nDistance Counter\nFullbright Mode\nTracer System\nCoordinates HUD",
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-    }
+    FeaturePanel(
+        title = "👁️ Visual Utilities",
+        description = """
+            Entity Names
+
+            Coordinates HUD
+
+            Time Display
+
+            Direction Indicator
+        """.trimIndent()
+    )
 }
 
 @Composable
 fun PlayerCategoryScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "👤 Player Info\n\nCoordinates\nDirection\nDimension\nPing\nPlayer Status",
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-    }
+    FeaturePanel(
+        title = "👤 Player Information",
+        description = """
+            Coordinates
+
+            Direction
+
+            Current Dimension
+
+            Health Status
+
+            Player Information
+        """.trimIndent()
+    )
 }
 
 @Composable
 fun WorldCategoryScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "🌍 World Info\n\nCoordinates\nBiome Detection\nTime Display\nNearby Entities\nWorld Stats",
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-    }
+    FeaturePanel(
+        title = "🌍 World Information",
+        description = """
+            Coordinates
+
+            Biome Information
+
+            Time Display
+
+            Nearby Entities
+
+            World Information
+        """.trimIndent()
+    )
 }
 
 @Composable
 fun HUDCategoryScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "📊 HUD Elements\n\nFPS Counter\nCPS Counter\nCoordinates\nKeystrokes\nPing Meter\nSpeed Display\nDirection Indicator\nCustom Watermark",
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-    }
+    FeaturePanel(
+        title = "📊 HUD Elements",
+        description = """
+            Coordinates
+
+            Direction Indicator
+
+            Player Status
+
+            Custom Watermark
+        """.trimIndent()
+    )
 }
 
 @Composable
 fun SettingsCategoryScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "⚙️ Settings\n\nMenu Animation\nMenu Size\nButton Position\nTheme Options\nAudio Controls\nReset to Default",
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-    }
-}
+    FeaturePanel(
+        title = "⚙️ Settings",
+        description = """
+            Menu Animation
 
-import androidx.compose.foundation.clickable
+            Menu Size
+
+            Button Position
+
+            Theme Options
+
+            Audio Controls
+
+            Reset to Default
+        """.trimIndent()
+    )
+}
