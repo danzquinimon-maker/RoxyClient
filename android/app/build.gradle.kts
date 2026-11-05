@@ -70,7 +70,7 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
 
-    // Lifecycle & ViewModel
+    // Lifecycle and ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
 
@@ -81,10 +81,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
-    // JSON parsing
+    // JSON
     implementation("com.google.code.gson:gson:2.10.1")
 
-    // Media3 for audio
+    // Media3
     implementation("androidx.media3:media3-exoplayer:1.1.1")
 
     // Testing
