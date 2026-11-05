@@ -1,22 +1,23 @@
 package com.roxyclient.service
 
-import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
 import android.view.Gravity
-import android.view.MotionEvent
 import android.view.WindowManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,30 +25,24 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.setViewTreeLifecycleOwner
-import androidx.lifecycle.setViewTreeViewModelStoreOwner
-import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.roxyclient.ui.theme.RoxyClientTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 
 class FloatingMenuService : Service() {
     private var windowManager: WindowManager? = null
     private var floatingView: ComposeView? = null
-    private val scope = CoroutineScope(Dispatchers.Main + Job())
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        if (floatingView != null) return START_STICKY
 
-        floatingView = ComposeView(this).apply {
+        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        val view = ComposeView(this).apply {
             setContent {
                 RoxyClientTheme {
                     FloatingMenuButton()
                 }
             }
         }
+        floatingView = view
 
         val params = WindowManager.LayoutParams().apply {
             type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -57,8 +52,8 @@ class FloatingMenuService : Service() {
                 WindowManager.LayoutParams.TYPE_PHONE
             }
             format = PixelFormat.TRANSLUCENT
+            // Keep the overlay touchable so its Compose click handler can receive taps.
             flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
             width = 80
             height = 80
@@ -68,25 +63,30 @@ class FloatingMenuService : Service() {
         }
 
         try {
-            windowManager?.addView(floatingView, params)
-        } catch (e: Exception) {
-            e.printStackTrace()
+            windowManager?.addView(view, params)
+        } catch (e: WindowManager.BadTokenException) {
+            floatingView = null
+            stopSelf(startId)
+        } catch (e: SecurityException) {
+            floatingView = null
+            stopSelf(startId)
         }
 
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onDestroy() {
-        try {
-            if (floatingView != null) {
-                windowManager?.removeView(floatingView)
+        floatingView?.let { view ->
+            try {
+                windowManager?.removeView(view)
+            } catch (_: IllegalArgumentException) {
+                // The view was already detached.
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
-        scope.cancel()
+        floatingView = null
+        windowManager = null
         super.onDestroy()
     }
 }
