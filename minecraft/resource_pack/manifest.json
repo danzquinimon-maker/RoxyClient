@@ -1,18 +1,20 @@
+
 {
   "format_version": 2,
   "header": {
     "description": "ROXY CLIENT Resource Pack - UI and textures",
     "name": "ROXY CLIENT Resource Pack",
     "uuid": "22222222-2222-2222-2222-222222222222",
-    "version": [1, 0, 0],
-    "min_engine_version": [1, 20, 0]
+    "version": [1, 0, 1],
+    "min_engine_version": [1, 26, 60]
   },
   "modules": [
     {
-      "description": "ROXY CLIENT Textures",
+      "description": "ROXY CLIENT Resources",
       "type": "resources",
       "uuid": "33333333-3333-3333-3333-333333333333",
-      "version": [1, 0, 0]
+      "version": [1, 0, 1]
     }
   ]
+
 }
